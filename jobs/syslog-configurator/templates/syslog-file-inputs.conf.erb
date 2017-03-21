@@ -1,0 +1,8 @@
+<% if_p("syslog_configurator.file_inputs") do |inputs| %>
+module(load="imfile")
+
+<% inputs.each do |tag, path| %>
+input(type="imfile" File="<%= path %>" Tag="<%= tag %>")
+<% end %>
+
+<% end %>

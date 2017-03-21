@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -e
+
+setup_rsyslog(){
+  JOB_DIR=/var/vcap/jobs/syslog-configurator
+  CONFIG_DIR="$JOB_DIR/config"
+
+  cp $CONFIG_DIR/syslog-file-inputs.conf /etc/rsyslog.d/00-syslog-file-inputs.conf
+  cp $CONFIG_DIR/syslog-forwarding.conf /etc/rsyslog.d/01-syslog-forwarding.conf
+
+  /usr/sbin/service rsyslog restart
+}
+
+setup_rsyslog

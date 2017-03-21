@@ -1,0 +1,22 @@
+---
+name: syslog-configurator
+templates:
+  syslog-file-inputs.conf.erb: config/syslog-file-inputs.conf
+  syslog-forwarding.conf.erb: config/syslog-forwarding.conf
+  pre-start: bin/pre-start
+
+packages: []
+
+properties:
+  syslog_configurator.file_inputs:
+    description: "Map of log files to tail into local syslog. Key represents log tag, value the file path."
+  syslog_configurator.forwarding.address:
+    description: "Syslog drain hostname"
+  syslog_configurator.forwarding.port:
+    description: "Syslog drain port"
+    default: 514
+  syslog_configurator.forwarding.protocol:
+    description: "Syslog drain protocol, tcp or udp"
+    default: "tcp"
+  syslog_configurator.forwarding.metadata:
+    description: "Metadata to include in structured log lines, e.g. 'instance_guid=abcdefg org_guid=123456'"

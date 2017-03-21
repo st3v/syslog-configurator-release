@@ -1,0 +1,37 @@
+<% if_p("syslog_configurator.forwarding.address", "syslog_configurator.forwarding.port") do |address, port| %>
+
+<%
+  networks = spec.networks.marshal_dump.values
+
+  network = networks.find do |network_spec|
+    network_spec.default
+  end
+
+  network ||= networks.first
+
+  job_ip = network.ip
+%>
+
+template(name="rfc5424" type="list") {
+  constant(value="<")
+  property(name="pri")
+  constant(value=">1 ")
+  property(name="timestamp" dateFormat="rfc3339")
+  constant(value=" <%= spec.address %> ")
+  property(name="app-name")
+  constant(value=" ")
+  property(name="procid")
+  constant(value=" ")
+  property(name="msgid")
+  constant(value=" [deployment=\"<%= spec.deployment %>\" group=\"<%= spec.job.name %>\" az=\"<%= spec.az %>\" id=\"<%= spec.id %>\" job=\"<%= name %>\" index=\"<%= spec.index.to_i %>\" <%= p('syslog_configurator.forwarding.metadata') %>] ")
+  property(name="msg")
+}
+
+# http://www.rsyslog.com/doc/v7-stable/configuration/actions.html: @ = UDP, @@ = TCP
+<%
+  protocol = '@@'
+  protocol = '@' if p("syslog_configurator.forwarding.protocol").downcase == "udp"
+%>
+*.* <%= protocol %><%= address %>:<%= port %>;rfc5424
+
+<% end %>
