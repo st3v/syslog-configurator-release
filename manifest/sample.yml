@@ -1,0 +1,40 @@
+---
+director_uuid: <%= `bosh status --uuid` %>
+
+name: syslog-configurator-sample
+releases:
+- name: syslog-configurator
+  version: latest
+
+stemcells:
+- name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+  version: latest
+  alias: standard
+
+instance_groups:
+- name: sample
+  instances: 1
+  stemcell: standard
+  azs: [default]
+  vm_type: default
+  persistent_disk_type: default
+  networks:
+  - name: default
+  jobs:
+  - name: syslog-configurator
+    release: syslog-configurator
+    properties:
+      syslog_configurator:
+        file_inputs:
+          redis: /var/vcap/sys/log/redis/redis.log
+        forwarding:
+          address: 10.70.20.99
+          port: 514
+          protocol: udp
+          metadata: "foo=bar"
+
+update:
+  canaries: 1
+  max_in_flight: 10
+  canary_watch_time: 1000-30000
+  update_watch_time: 1000-30000
